@@ -1,0 +1,51 @@
+{% extends 'base.html' %}
+{% block title %}Admin Dashboard{% endblock %}
+{% block content %}
+<div class="dashboard-heading">
+  <div><div class="eyebrow">SYSTEM ADMINISTRATION</div><h1>Overview & management.</h1><p class="muted">Monitor platform activity and manage registered accounts.</p></div>
+  <span class="live-pill"><i></i> ADMIN ACCESS</span>
+</div>
+<section class="stats-grid stats-four">
+  <article class="stat-card"><div class="stat-top"><span>Total students</span><span class="stat-icon cyan">♙</span></div><strong>{{ total_students }}</strong><small>Registered accounts</small></article>
+  <article class="stat-card"><div class="stat-top"><span>Lecturers</span><span class="stat-icon blue">▤</span></div><strong>{{ total_lecturers }}</strong><small>Active lecturer accounts</small></article>
+  <article class="stat-card"><div class="stat-top"><span>Present today</span><span class="stat-icon green">✓</span></div><strong>{{ present_today }}</strong><small>Today's attendance records</small></article>
+  <article class="stat-card"><div class="stat-top"><span>Attendance rate</span><span class="stat-icon violet">↗</span></div><strong>{{ attendance_rate }}%</strong><small>Of registered students today</small></article>
+</section>
+<div class="content-grid">
+  <section class="panel panel-wide">
+    <div class="panel-heading"><div><div class="eyebrow">SYSTEM ACTIVITY</div><h2>Recent attendance</h2></div><span class="count-pill">{{ total_records }} total records</span></div>
+    <div class="table-wrap"><table><thead><tr><th>Student ID</th><th>Name</th><th>Date</th><th>Time</th><th>Status</th></tr></thead><tbody>
+      {% for row in recent %}<tr><td class="mono">{{ row.student_id }}</td><td>{{ row.name }}</td><td>{{ row.date }}</td><td>{{ row.time }}</td><td><span class="status-badge">{{ row.status }}</span></td></tr>
+      {% else %}<tr><td colspan="5" class="empty-state">No attendance activity yet.</td></tr>{% endfor %}
+    </tbody></table></div>
+  </section>
+  <section class="panel">
+    <div class="panel-heading"><div><div class="eyebrow">ADMIN SECURITY</div><h2>Account settings</h2></div></div>
+    <p class="muted small-copy">Change the initial administrator credentials.</p>
+    <form action="{{ url_for('admin_settings') }}" method="post" class="form-stack">
+      <label for="admin-username">New username</label><input id="admin-username" name="username" minlength="3" required value="{{ session.get('username','admin') }}">
+      <label for="admin-password">New password</label><input id="admin-password" type="password" name="password" minlength="6" required placeholder="At least 6 characters">
+      <button class="btn btn-primary btn-wide" type="submit">Update credentials</button>
+    </form>
+  </section>
+</div>
+<section class="panel table-panel">
+  <div class="panel-heading"><div><div class="eyebrow">LECTURER ACCOUNTS</div><h2>Manage lecturers <span class="heading-count">{{ lecturers|length }}</span></h2></div></div>
+  <form class="inline-create" action="{{ url_for('add_lecturer') }}" method="post">
+    <div><label for="new-lecturer">Username</label><input id="new-lecturer" name="username" required minlength="3" placeholder="e.g. lecturer02"></div>
+    <div><label for="new-lecturer-password">Temporary password</label><input id="new-lecturer-password" name="password" type="password" required minlength="6" placeholder="At least 6 characters"></div>
+    <button class="btn btn-primary" type="submit">＋ Add lecturer</button>
+  </form>
+  <div class="table-wrap"><table><thead><tr><th>Account ID</th><th>Username</th><th>Action</th></tr></thead><tbody>
+    {% for row in lecturers %}<tr><td class="mono">#{{ row.id }}</td><td>{{ row.username }}</td><td>{% if row.username != 'lecturer' %}<form action="{{ url_for('delete_lecturer', lecturer_id=row.id) }}" method="post" onsubmit="return confirm('Delete this lecturer account?');"><button class="text-danger" type="submit">Delete account</button></form>{% else %}<span class="muted">Default account</span>{% endif %}</td></tr>
+    {% else %}<tr><td colspan="3" class="empty-state">No lecturer accounts found.</td></tr>{% endfor %}
+  </tbody></table></div>
+</section>
+<section class="panel table-panel">
+  <div class="panel-heading"><div><div class="eyebrow">STUDENT DIRECTORY</div><h2>Registered students <span class="heading-count">{{ students|length }}</span></h2></div></div>
+  <div class="table-wrap"><table><thead><tr><th>Student ID</th><th>Name</th><th>Email</th><th>Registered</th><th>Action</th></tr></thead><tbody>
+    {% for row in students %}<tr><td class="mono">{{ row.student_id }}</td><td>{{ row.name }}</td><td>{{ row.email or '—' }}</td><td>{{ (row.created_at or '')[:10] }}</td><td><form action="{{ url_for('admin_delete_student', student_id=row.student_id) }}" method="post" onsubmit="return confirm('Delete this student and their attendance records?');"><button class="text-danger" type="submit">Remove</button></form></td></tr>
+    {% else %}<tr><td colspan="5" class="empty-state">No students registered yet.</td></tr>{% endfor %}
+  </tbody></table></div>
+</section>
+{% endblock %}

@@ -1,0 +1,323 @@
+
+{% extends 'base.html' %}
+{% block title %}Student Registration{% endblock %}
+
+{% block content %}
+
+<div class="register-page">
+
+    <div class="register-heading">
+        <div class="register-badge">
+            <span class="register-dot"></span>
+            ATTENDAI STUDENT PORTAL
+        </div>
+
+        <h1>Create Your <span>Account</span></h1>
+
+        <p>
+            Join AttendAI and experience smarter, secure face recognition attendance.
+        </p>
+    </div>
+
+    <div class="register-card">
+
+        <div class="register-card-header">
+            <div>
+                <span class="register-step-label">STUDENT ENROLLMENT</span>
+                <h2>Student Registration</h2>
+                <p>Complete your details and register your face.</p>
+            </div>
+
+            <div class="register-icon">✦</div>
+        </div>
+
+        <div class="register-progress">
+            <div class="progress-step active">
+                <span>01</span>
+                <div>
+                    <strong>Personal Details</strong>
+                    <small>Enter your information</small>
+                </div>
+            </div>
+
+            <div class="progress-line"></div>
+
+            <div class="progress-step active">
+                <span>02</span>
+                <div>
+                    <strong>Face Registration</strong>
+                    <small>Capture your face</small>
+                </div>
+            </div>
+        </div>
+
+        <form id="f">
+
+            <div class="register-grid">
+
+                <!-- STUDENT DETAILS -->
+                <section class="register-section">
+
+                    <div class="section-heading">
+                        <div class="section-number">01</div>
+                        <div>
+                            <h3>Your Information</h3>
+                            <p>Enter your university details below.</p>
+                        </div>
+                    </div>
+
+                    <div class="register-fields">
+
+                        <div class="register-field">
+                            <label for="student_id">
+                                Student ID <span>*</span>
+                            </label>
+                            <input
+                                id="student_id"
+                                name="student_id"
+                                required
+                                placeholder="D/ICT/25/001"
+                                autocomplete="username">
+                        </div>
+
+                        <div class="register-field">
+                            <label for="name">
+                                Full Name <span>*</span>
+                            </label>
+                            <input
+                                id="name"
+                                name="name"
+                                required
+                                placeholder="Enter your full name"
+                                autocomplete="name">
+                        </div>
+
+                        <div class="register-field">
+                            <label for="email">Email Address</label>
+                            <input
+                                id="email"
+                                name="email"
+                                type="email"
+                                placeholder="yourname@example.com"
+                                autocomplete="email">
+                        </div>
+
+                        <div class="register-field">
+                            <label for="password">
+                                Password <span>*</span>
+                            </label>
+                            <input
+                                id="password"
+                                name="password"
+                                minlength="6"
+                                required
+                                type="password"
+                                placeholder="Minimum 6 characters"
+                                autocomplete="new-password">
+                        </div>
+
+                    </div>
+
+                    <div class="register-security-note">
+                        <span>♢</span>
+                        <p>Your personal information is securely stored.</p>
+                    </div>
+
+                </section>
+
+                <!-- FACE REGISTRATION -->
+                <section class="register-section face-section">
+
+                    <div class="section-heading">
+                        <div class="section-number">02</div>
+                        <div>
+                            <h3>Face Recognition</h3>
+                            <p>Position your face inside the camera frame.</p>
+                        </div>
+                    </div>
+
+                    <div class="camera-card">
+
+                        <div class="camera-top">
+                            <span class="camera-live">
+                                <span></span> CAMERA
+                            </span>
+                            <span class="camera-resolution">LIVE PREVIEW</span>
+                        </div>
+
+                        <div class="viewfinder" id="vf">
+                            <div class="camera-grid"></div>
+                            <div class="face-guide">
+                                <span class="corner tl"></span>
+                                <span class="corner tr"></span>
+                                <span class="corner bl"></span>
+                                <span class="corner br"></span>
+                            </div>
+                            <div class="scanline"></div>
+                            <video id="v" autoplay playsinline muted></video>
+                            <canvas id="c"></canvas>
+
+                            <div class="camera-placeholder">
+                                <span>◎</span>
+                                <small>Waiting for camera...</small>
+                            </div>
+                        </div>
+
+                        <p id="s" class="status-pill" data-state="busy">
+                            Starting camera...
+                        </p>
+
+                        <div class="camera-tip">
+                            <span>ⓘ</span>
+                            Look straight at the camera and ensure good lighting.
+                        </div>
+
+                        <div class="reg-actions">
+                            <button type="button" class="register-capture-btn" id="cap">
+                                <span>◎</span> Capture Face
+                            </button>
+
+                            <button class="register-submit-btn" type="submit" id="submit">
+                                Create Account <span>→</span>
+                            </button>
+                        </div>
+
+                        <div id="r"></div>
+
+                    </div>
+                </section>
+
+            </div>
+
+        </form>
+
+        <div class="register-bottom">
+            <span>Already have an account?</span>
+            <a href="/student/login">Sign in here →</a>
+        </div>
+
+    </div>
+
+    <div class="register-footer-note">
+        <span>✦</span> Powered by AttendAI Face Recognition Technology
+    </div>
+
+</div>
+
+<style>
+/* Keep existing camera and registration JavaScript unchanged.
+   Styling is in style.css. */
+</style>
+
+<script>
+(function () {
+    const f = document.getElementById('f'),
+          v = document.getElementById('v'),
+          c = document.getElementById('c'),
+          s = document.getElementById('s'),
+          r = document.getElementById('r'),
+          cap = document.getElementById('cap'),
+          vf = document.getElementById('vf'),
+          submit = document.getElementById('submit');
+
+    let stream = null, img = '';
+
+    function status(text, state) {
+        s.textContent = text;
+        s.dataset.state = state || '';
+    }
+
+    function show(ok, msg) {
+        r.innerHTML = '';
+        const d = document.createElement('div');
+        d.className = 'flash ' + (ok ? 'success' : 'error');
+        d.textContent = msg;
+        r.appendChild(d);
+    }
+
+    if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+        status('Camera unavailable. Open this page over HTTPS or localhost.', 'error');
+    } else {
+        navigator.mediaDevices.getUserMedia({ video: true }).then(x => {
+            stream = x;
+            v.srcObject = x;
+            status('Camera ready — look straight at the camera.', 'ok');
+        }).catch(() => {
+            status('Camera permission denied.', 'error');
+        });
+    }
+
+    cap.onclick = () => {
+        if (img) {
+            img = '';
+            vf.classList.remove('captured');
+            cap.innerHTML = '<span>◎</span> Capture Face';
+            status('Camera ready — look straight at the camera.', 'ok');
+            return;
+        }
+
+        if (!v.videoWidth) {
+            status('Camera is not ready yet.', 'error');
+            return;
+        }
+
+        c.width = v.videoWidth;
+        c.height = v.videoHeight;
+        c.getContext('2d').drawImage(v, 0, 0);
+
+        img = c.toDataURL('image/jpeg', .9);
+        vf.classList.add('captured');
+        cap.innerHTML = '<span>↻</span> Retake';
+        status('Face captured successfully.', 'ok');
+    };
+
+    f.onsubmit = async e => {
+        e.preventDefault();
+
+        if (!img) {
+            show(false, 'Capture your face first.');
+            return;
+        }
+
+        const fd = new FormData(f);
+        fd.append('image', img);
+
+        submit.disabled = true;
+        status('Checking your face and details...', 'busy');
+
+        try {
+            const x = await fetch('/student/register', {
+                method: 'POST',
+                body: fd
+            });
+
+            const d = await x.json();
+
+            show(d.ok, d.message);
+
+            status(
+                d.ok ? 'Registration successful.' : 'Please review and try again.',
+                d.ok ? 'ok' : 'error'
+            );
+
+            if (d.ok) {
+                if (stream) {
+                    stream.getTracks().forEach(t => t.stop());
+                }
+
+                setTimeout(() => location = '/student/login', 1200);
+                return;
+            }
+
+        } catch (err) {
+            show(false, 'Could not reach the server. Please try again.');
+            status('Connection problem.', 'error');
+        }
+
+        submit.disabled = false;
+    };
+
+})();
+</script>
+
+{% endblock %}

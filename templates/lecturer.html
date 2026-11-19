@@ -1,0 +1,88 @@
+{% extends 'base.html' %}
+{% block title %}Lecturer Dashboard{% endblock %}
+{% block content %}
+<div class="dashboard-heading">
+  <div><div class="eyebrow">LECTURER WORKSPACE</div><h1>Attendance control centre.</h1><p class="muted">Recognize students and manage daily attendance records.</p></div>
+  <span class="live-pill"><i></i> SYSTEM READY</span>
+</div>
+<section class="stats-grid">
+  <article class="stat-card"><div class="stat-top"><span>Registered students</span><span class="stat-icon cyan">♙</span></div><strong>{{ total_students }}</strong><small>Student accounts</small></article>
+  <article class="stat-card"><div class="stat-top"><span>Present today</span><span class="stat-icon green">✓</span></div><strong>{{ present_today }}</strong><small>Attendance marked today</small></article>
+  <article class="stat-card"><div class="stat-top"><span>Today's attendance rate</span><span class="stat-icon blue">↗</span></div><strong>{{ attendance_rate }}%</strong><small>Of registered students</small></article>
+</section>
+<div class="content-grid lecturer-grid">
+  <section class="panel">
+    <div class="panel-heading"><div><div class="eyebrow">LIVE FACE RECOGNITION</div><h2>Attendance scanner</h2></div><span class="live-pill"><i></i> CAMERA</span></div>
+    <p class="muted small-copy">Position one registered student in front of the camera, then scan.</p>
+    <div class="camera-frame" id="vf"><div class="camera-corners"></div><div class="scanline"></div><video id="v" autoplay playsinline muted></video><div class="camera-placeholder" id="camera-placeholder"><span>◎</span><b>Starting camera…</b></div></div>
+    <p id="camera-status" class="camera-status" data-state="busy">Requesting camera permission…</p>
+    <button class="btn btn-primary btn-wide" id="scan" type="button">⌖ &nbsp; Recognize & mark attendance</button>
+    <p class="privacy-note">Face data is matched against registered student encodings stored in the project database.</p>
+  </section>
+  <section class="panel">
+    <div class="panel-heading"><div><div class="eyebrow">ACCOUNT</div><h2>Lecturer settings</h2></div><span class="stat-icon blue">⚙</span></div>
+    <p class="muted small-copy">Update your lecturer login details.</p>
+    <form action="{{ url_for('update_lecturer') }}" method="post" class="form-stack">
+      <label for="username">New username</label><input id="username" name="username" required minlength="3" placeholder="New username" value="{{ session.get('username','') }}">
+      <label for="password">New password</label><input id="password" type="password" name="password" minlength="6" required placeholder="At least 6 characters">
+      <button class="btn btn-secondary btn-wide" type="submit">Save account changes</button>
+    </form>
+    <div class="tip-box"><b>Tip</b><span>Use the date filter below to find a specific day's attendance.</span></div>
+  </section>
+</div>
+<section class="panel table-panel">
+  <div class="panel-heading panel-heading-wrap"><div><div class="eyebrow">ATTENDANCE LOG</div><h2>Attendance records</h2></div>
+    <div class="table-actions"><form method="get" class="filter-form"><input type="date" name="date" value="{{ selected_date }}"><button class="btn btn-secondary btn-small">Filter</button>{% if selected_date %}<a class="clear-filter" href="{{ url_for('ldash') }}">Clear</a>{% endif %}</form><a class="btn btn-primary btn-small" href="{{ url_for('download_attendance') }}">↓ Export CSV</a></div>
+  </div>
+  <div class="table-wrap"><table><thead><tr><th>Student ID</th><th>Student name</th><th>Date</th><th>Time</th><th>Status</th></tr></thead><tbody>
+    {% for row in att[:100] %}<tr><td class="mono">{{ row.student_id }}</td><td>{{ row.name }}</td><td>{{ row.date }}</td><td>{{ row.time }}</td><td><span class="status-badge">{{ row.status }}</span></td></tr>
+    {% else %}<tr><td colspan="5" class="empty-state">No attendance records found for this selection.</td></tr>{% endfor %}
+  </tbody></table></div>
+  <div class="table-foot">Showing up to 100 records.</div>
+</section>
+<section class="panel table-panel">
+  <div class="panel-heading"><div><div class="eyebrow">STUDENT DIRECTORY</div><h2>Registered students <span class="heading-count">{{ students|length }}</span></h2></div></div>
+  <div class="table-wrap"><table><thead><tr><th>Student ID</th><th>Name</th><th>Action</th></tr></thead><tbody>
+    {% for row in students %}<tr><td class="mono">{{ row.student_id }}</td><td>{{ row.name }}</td><td><form action="{{ url_for('delete_student', student_id=row.student_id) }}" method="post" onsubmit="return confirm('Remove this student and their attendance records?');"><button class="text-danger" type="submit">Remove</button></form></td></tr>
+    {% else %}<tr><td colspan="3" class="empty-state">No students registered yet.</td></tr>{% endfor %}
+  </tbody></table></div>
+</section>
+{% endblock %}
+{% block scripts %}
+<script>
+(() => {
+  const video = document.getElementById('v');
+  const status = document.getElementById('camera-status');
+  const scan = document.getElementById('scan');
+  const frame = document.getElementById('vf');
+  const placeholder = document.getElementById('camera-placeholder');
+  const canvas = document.createElement('canvas');
+  let stream = null;
+  const setStatus = (message, state) => { status.textContent = message; status.dataset.state = state; };
+  if (!navigator.mediaDevices?.getUserMedia) {
+    setStatus('Camera is unavailable. Use localhost or HTTPS.', 'error');
+  } else {
+    navigator.mediaDevices.getUserMedia({video: {facingMode: 'user'}})
+      .then(media => { stream = media; video.srcObject = media; placeholder.hidden = true; setStatus('Camera ready. Position one face in the frame.', 'ok'); })
+      .catch(() => setStatus('Camera permission denied. Allow camera access and refresh.', 'error'));
+  }
+  scan.addEventListener('click', async () => {
+    if (!video.videoWidth) { setStatus('Camera is not ready yet.', 'error'); return; }
+    canvas.width = video.videoWidth; canvas.height = video.videoHeight;
+    canvas.getContext('2d').drawImage(video, 0, 0);
+    scan.disabled = true; frame.classList.add('scanning'); setStatus('Analyzing face…', 'busy');
+    try {
+      const response = await fetch('{{ url_for("recognize") }}', {
+        method: 'POST', headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({image: canvas.toDataURL('image/jpeg', .9)})
+      });
+      const result = await response.json();
+      setStatus(result.message || 'Scan complete.', result.ok ? 'ok' : 'error');
+      if (result.ok) { setTimeout(() => location.reload(), 1300); return; }
+    } catch (error) { setStatus('Could not connect to the server. Check Flask is running.', 'error'); }
+    frame.classList.remove('scanning'); scan.disabled = false;
+  });
+  window.addEventListener('beforeunload', () => stream?.getTracks().forEach(track => track.stop()));
+})();
+</script>
+{% endblock %}

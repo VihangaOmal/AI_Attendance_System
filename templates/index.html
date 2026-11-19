@@ -1,0 +1,321 @@
+
+{% extends 'base.html' %}
+{% block title %}Welcome{% endblock %}
+
+{% block content %}
+
+<!-- HERO SECTION -->
+<section class="premium-hero">
+
+    <div class="hero-glow hero-glow-one"></div>
+    <div class="hero-glow hero-glow-two"></div>
+
+    <div class="premium-hero-content">
+
+        <div class="premium-label">
+            <span class="label-dot"></span>
+            NEXT GENERATION ATTENDANCE SYSTEM
+        </div>
+
+        <h1>
+            The future of<br>
+            <span class="gradient-text">attendance</span><br>
+            starts here.
+        </h1>
+
+        <p class="premium-description">
+            Experience smarter campus management with AI-powered
+            face recognition. Fast, accurate and secure attendance
+            tracking — designed for modern education.
+        </p>
+
+        <div class="premium-actions">
+            <a href="{{ url_for('slogin') }}" class="premium-btn primary-btn">
+                Student Portal
+                <span>↗</span>
+            </a>
+
+            <a href="{{ url_for('llogin') }}" class="premium-btn outline-btn">
+                Lecturer Portal
+                <span>→</span>
+            </a>
+        </div>
+
+        <a href="{{ url_for('admin_login') }}" class="admin-link">
+            Administrator access <span>↗</span>
+        </a>
+
+        <div class="premium-trust">
+            <div><span>✓</span> Secure Access</div>
+            <div><span>✓</span> AI Recognition</div>
+            <div><span>✓</span> Instant Records</div>
+        </div>
+
+    </div>
+
+    <!-- AI SCANNER VISUAL -->
+    <div class="premium-visual">
+
+        <div class="visual-orbit orbit-a"></div>
+        <div class="visual-orbit orbit-b"></div>
+
+        <div class="scanner-window">
+
+            <div class="scanner-header">
+                <div class="scanner-title">
+                    <span class="scanner-status"></span>
+                    ATTENDAI / AI SCANNER
+                </div>
+                <span class="scanner-version">V 2.0</span>
+            </div>
+
+            <div class="scanner-display">
+
+                <div class="scanner-grid"></div>
+
+                <div class="scanner-corner corner-a"></div>
+                <div class="scanner-corner corner-b"></div>
+                <div class="scanner-corner corner-c"></div>
+                <div class="scanner-corner corner-d"></div>
+
+                <div class="ai-face">
+                    <div class="face-hair"></div>
+                    <div class="face-eyes">
+                        <span></span>
+                        <span></span>
+                    </div>
+                    <div class="face-nose"></div>
+                    <div class="face-mouth"></div>
+                </div>
+
+                <div class="scanner-line"></div>
+
+                <div class="face-detection-label">
+                    <span></span> FACE DETECTION ACTIVE
+                </div>
+
+                <div class="scanner-coordinates">
+                    AI VISION SYSTEM<br>
+                    STATUS: STANDBY
+                </div>
+
+            </div>
+
+            <div class="scanner-footer">
+                <div>
+                    <span class="footer-check">✓</span>
+                    <div>
+                        <strong>System Ready</strong>
+                        <small>Waiting for recognition</small>
+                    </div>
+                </div>
+                <span class="ready-label">ONLINE</span>
+            </div>
+
+        </div>
+
+        <div class="floating-info floating-top">
+            <div class="floating-icon">✦</div>
+            <div>
+                <strong>AI Powered</strong>
+                <small>Smart face recognition</small>
+            </div>
+        </div>
+
+        <div class="floating-info floating-bottom">
+            <div class="floating-icon purple-icon">◷</div>
+            <div>
+                <strong>Real-time Tracking</strong>
+                <small>Attendance management</small>
+            </div>
+        </div>
+
+    </div>
+
+    <div class="hero-bottom-label">
+        <span>01</span> INTELLIGENT CAMPUS MANAGEMENT
+        <span class="bottom-line"></span>
+    </div>
+
+</section>
+
+
+<!-- STATS SECTION -->
+<section class="premium-stats">
+
+    <div class="stat-item">
+        <span class="stat-number">AI</span>
+        <span class="stat-description">Face Recognition</span>
+    </div>
+
+    <div class="stat-divider"></div>
+
+    <div class="stat-item">
+        <span class="stat-number">24/7</span>
+        <span class="stat-description">System Access</span>
+    </div>
+
+    <div class="stat-divider"></div>
+
+    <div class="stat-item">
+        <span class="stat-number">100%</span>
+        <span class="stat-description">Digital Records</span>
+    </div>
+
+    <div class="stat-divider"></div>
+
+    <div class="stat-item">
+        <span class="stat-number">3</span>
+        <span class="stat-description">Dedicated Portals</span>
+    </div>
+
+</section>
+
+
+<!-- FEATURES SECTION -->
+<section class="premium-features">
+
+    <div class="premium-section-heading">
+        <div>
+            <span class="section-tag">BUILT FOR SMART CAMPUSES</span>
+            <h2>Everything you need.<br><span>One intelligent platform.</span></h2>
+        </div>
+
+        <p>
+            A connected attendance experience for students,
+            lecturers and administrators.
+        </p>
+    </div>
+
+
+    <div class="premium-feature-grid">
+
+        <article class="premium-feature-card student-card">
+            <div class="card-top">
+                <div class="feature-symbol">01</div>
+                <span class="card-arrow">↗</span>
+            </div>
+
+            <div class="feature-emoji">◉</div>
+
+            <h3>Student Portal</h3>
+
+            <p>
+                Register your face, access your personal dashboard
+                and keep track of your attendance history.
+            </p>
+
+            <a href="{{ url_for('slogin') }}">
+                Explore student portal <span>→</span>
+            </a>
+        </article>
+
+
+        <article class="premium-feature-card lecturer-card">
+            <div class="card-top">
+                <div class="feature-symbol">02</div>
+                <span class="card-arrow">↗</span>
+            </div>
+
+            <div class="feature-emoji">⌘</div>
+
+            <h3>Lecturer Workspace</h3>
+
+            <p>
+                Start face recognition sessions, manage classroom
+                attendance and download attendance reports.
+            </p>
+
+            <a href="{{ url_for('llogin') }}">
+                Explore lecturer portal <span>→</span>
+            </a>
+        </article>
+
+
+        <article class="premium-feature-card admin-card">
+            <div class="card-top">
+                <div class="feature-symbol">03</div>
+                <span class="card-arrow">↗</span>
+            </div>
+
+            <div class="feature-emoji">⚙</div>
+
+            <h3>Admin Workspace</h3>
+
+            <p>
+                Manage student and lecturer accounts while
+                monitoring the attendance management system.
+            </p>
+
+            <a href="{{ url_for('admin_login') }}">
+                Explore admin portal <span>→</span>
+            </a>
+        </article>
+
+    </div>
+
+</section>
+
+
+<!-- HOW IT WORKS -->
+<section class="premium-process">
+
+    <div class="process-heading">
+        <span class="section-tag">A SIMPLE PROCESS</span>
+        <h2>Smart attendance.<br><span>Made effortless.</span></h2>
+        <p>Three simple steps to a smarter attendance experience.</p>
+    </div>
+
+    <div class="process-grid">
+
+        <div class="process-step">
+            <div class="process-number">01</div>
+            <div class="process-icon">◎</div>
+            <h3>Register</h3>
+            <p>Students register their details and face information securely.</p>
+        </div>
+
+        <div class="process-connector">→</div>
+
+        <div class="process-step">
+            <div class="process-number">02</div>
+            <div class="process-icon">⌁</div>
+            <h3>Recognize</h3>
+            <p>The AI system identifies registered faces during attendance sessions.</p>
+        </div>
+
+        <div class="process-connector">→</div>
+
+        <div class="process-step">
+            <div class="process-number">03</div>
+            <div class="process-icon">✓</div>
+            <h3>Record</h3>
+            <p>Attendance records are stored digitally for future reference.</p>
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- CTA SECTION -->
+<section class="premium-cta">
+
+    <div class="cta-glow"></div>
+
+    <span class="section-tag">WELCOME TO THE FUTURE</span>
+
+    <h2>Make every attendance<br><span>count.</span></h2>
+
+    <p>
+        Discover a smarter way to manage classroom attendance
+        with AttendAI.
+    </p>
+
+    <a href="{{ url_for('slogin') }}" class="premium-btn cta-button">
+        Get Started <span>↗</span>
+    </a>
+
+</section>
+
+{% endblock %}

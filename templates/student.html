@@ -1,0 +1,30 @@
+{% extends 'base.html' %}
+{% block title %}Student Dashboard{% endblock %}
+{% block content %}
+<div class="dashboard-heading">
+  <div><div class="eyebrow">STUDENT WORKSPACE</div><h1>Welcome, {{ session.get('name', 'Student') }}.</h1><p class="muted">Here is your personal attendance overview.</p></div>
+  <div class="profile-chip"><span class="avatar">{{ (session.get('name') or 'S')[:1]|upper }}</span><div><b>{{ session.get('name') }}</b><small>{{ session.get('student_id') }}</small></div></div>
+</div>
+<section class="stats-grid stats-three">
+  <article class="stat-card"><div class="stat-top"><span>Total attendance</span><span class="stat-icon cyan">✓</span></div><strong>{{ rows|length }}</strong><small>Recorded attendance days</small></article>
+  <article class="stat-card"><div class="stat-top"><span>Latest attendance</span><span class="stat-icon blue">◷</span></div><strong class="stat-date">{{ rows[0].date if rows else '—' }}</strong><small>{{ rows[0].time if rows else 'No records yet' }}</small></article>
+  <article class="stat-card"><div class="stat-top"><span>Account status</span><span class="stat-icon green">●</span></div><strong class="stat-word">Active</strong><small>Student account registered</small></article>
+</section>
+<div class="content-grid">
+  <section class="panel panel-wide">
+    <div class="panel-heading"><div><div class="eyebrow">ATTENDANCE HISTORY</div><h2>Your records</h2></div><span class="count-pill">{{ rows|length }} records</span></div>
+    <div class="table-wrap"><table><thead><tr><th>Date</th><th>Time</th><th>Status</th></tr></thead><tbody>
+      {% for row in rows %}<tr><td>{{ row.date }}</td><td>{{ row.time }}</td><td><span class="status-badge">{{ row.status }}</span></td></tr>
+      {% else %}<tr><td colspan="3" class="empty-state">No attendance records have been added yet.</td></tr>{% endfor %}
+    </tbody></table></div>
+  </section>
+  <section class="panel">
+    <div class="panel-heading"><div><div class="eyebrow">ACCOUNT SECURITY</div><h2>Change password</h2></div></div>
+    <p class="muted small-copy">Use a password with at least 6 characters.</p>
+    <form action="{{ url_for('update_student') }}" method="post" class="form-stack">
+      <label for="new_password">New password</label><input id="new_password" type="password" name="password" minlength="6" required placeholder="Enter new password">
+      <button class="btn btn-primary btn-wide" type="submit">Update password</button>
+    </form>
+  </section>
+</div>
+{% endblock %}

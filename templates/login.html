@@ -1,0 +1,37 @@
+{% extends 'base.html' %}
+{% block title %}{{ kind }} Sign in{% endblock %}
+{% block content %}
+<section class="auth-layout">
+  <div class="auth-aside">
+    <div class="eyebrow"><span class="pulse-dot"></span> ATTENDAI SECURE PORTAL</div>
+    <h1>Your campus,<br><span>one sign-in away.</span></h1>
+    <p>Access your dedicated workspace to manage attendance with confidence.</p>
+    <div class="auth-benefits"><div><span>✓</span> Protected account access</div><div><span>✓</span> Centralized attendance records</div><div><span>✓</span> Simple, intuitive workspace</div></div>
+  </div>
+  <div class="auth-card">
+    <div class="auth-switch">
+      <a class="{{ 'selected' if kind == 'Student' }}" href="{{ url_for('slogin') }}">Student</a>
+      <a class="{{ 'selected' if kind == 'Lecturer' }}" href="{{ url_for('llogin') }}">Lecturer</a>
+      <a class="{{ 'selected' if kind == 'Admin' }}" href="{{ url_for('admin_login') }}">Admin</a>
+    </div>
+    <div class="auth-icon">{% if kind == 'Student' %}♙{% elif kind == 'Lecturer' %}▤{% else %}⌘{% endif %}</div>
+    <div class="eyebrow">{{ kind|upper }} WORKSPACE</div>
+    <h2>Welcome back</h2><p class="muted">Sign in to continue to your {{ kind|lower }} dashboard.</p>
+    <form method="post" class="form-stack">
+      {% if kind == 'Student' %}
+        <label for="student_id">Student ID</label>
+        <input id="student_id" name="student_id" required placeholder="e.g. D/ICT/25/001" autocomplete="username">
+      {% else %}
+        <label for="username">Username</label>
+        <input id="username" name="username" required placeholder="Enter your username" autocomplete="username">
+      {% endif %}
+      <label for="password">Password</label>
+      <input id="password" type="password" name="password" required placeholder="Enter your password" autocomplete="current-password">
+      <button class="btn btn-primary btn-wide" type="submit">Sign in <span>→</span></button>
+      {% if kind == 'Student' %}<p class="form-foot">New student? <a href="{{ url_for('register') }}">Create an account</a></p>{% endif %}
+      {% if kind == 'Admin' %}<div class="demo-note"><b>Initial demo access</b><span>Username: admin &nbsp;·&nbsp; Password: admin123</span><small>Change these credentials from the admin dashboard after first sign-in.</small></div>{% endif %}
+      {% if kind == 'Lecturer' %}<div class="demo-note"><b>Initial lecturer demo access</b><span>Username: lecturer &nbsp;·&nbsp; Password: lecturer123</span><small>Change the default credentials after signing in.</small></div>{% endif %}
+    </form>
+  </div>
+</section>
+{% endblock %}
